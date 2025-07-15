@@ -44,7 +44,14 @@ cd rule-management-system-/
 ```
 
 2. Start the backend
+   add .env to server
 ```
+   PORT=3001
+   MONGO_URI=mongodb://localhost:27017/rulesdb
+```
+
+```
+cd server
 npm install
 npm run dev
 ```
