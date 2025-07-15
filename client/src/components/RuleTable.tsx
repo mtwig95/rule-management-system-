@@ -58,95 +58,88 @@ export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder
     };
 
     return (<>
-            <TableContainer component={Paper}>
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext
-                        items={rules.map(rule => rule._id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <Table>
-                            <TableHead sx={{backgroundColor: '#1f2a44'}}>
-                                <TableRow>
-                                    <TableCell sx={{color: '#fff'}}>#</TableCell>
-                                    <TableCell sx={{color: '#fff'}}>Action</TableCell>
-                                    <TableCell sx={{color: '#fff'}}>Name</TableCell>
-                                    <TableCell sx={{color: '#fff'}}>Source</TableCell>
-                                    <TableCell sx={{color: '#fff'}}>Destination</TableCell>
-                                    <TableCell sx={{color: '#fff'}} align="center">Delete</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rules.map(rule => (<SortableRow key={rule._id} rule={rule} onDelete={onDelete}/>))}
-                            </TableBody>
-                        </Table>
-                    </SortableContext>
-                </DndContext>
-            </TableContainer>
+        <TableContainer component={Paper}>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext
+                    items={rules.map(rule => rule._id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <Table>
+                        <TableHead sx={{backgroundColor: '#1f2a44'}}>
+                            <TableRow>
+                                <TableCell sx={{color: '#fff'}}>#</TableCell>
+                                <TableCell sx={{color: '#fff'}}>Action</TableCell>
+                                <TableCell sx={{color: '#fff'}}>Name</TableCell>
+                                <TableCell sx={{color: '#fff'}}>Source</TableCell>
+                                <TableCell sx={{color: '#fff'}}>Destination</TableCell>
+                                <TableCell sx={{color: '#fff'}} align="center">Delete</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {rules.map(rule => (<SortableRow key={rule._id} rule={rule} onDelete={onDelete}/>))}
+                        </TableBody>
+                    </Table>
+                </SortableContext>
+            </DndContext>
+        </TableContainer>
 
-            <Box mt={2} display="flex" justifyContent="center">
-                <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(e, value) => onPageChange(value)}
-                    color="primary"
-                />
-            </Box>
-        </>);
+        <Box mt={2} display="flex" justifyContent="center">
+            <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(e, value) => onPageChange(value)}
+                color="primary"
+            />
+        </Box>
+    </>);
 };
 
 const SortableRow = ({rule, onDelete}: { rule: Rule, onDelete: (id: string) => void }) => {
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule._id});
 
     const style = {
-        transform: CSS.Transform.toString(transform),
-        transition
+        transform: CSS.Transform.toString(transform), transition
     };
 
     return (<TableRow ref={setNodeRef} style={style}
                       sx={{backgroundColor: rule.action === 'Block' ? '#f9f9f9' : '#eaf4ea'}}>
 
-            <TableCell>
-                <Box display="flex" alignItems="center" gap={1}>
+        <TableCell>
+            <Box display="flex" alignItems="center" gap={1}>
       <span {...attributes} {...listeners} style={{cursor: 'grab'}}>
         <DragIndicatorIcon fontSize="small"/>
       </span>
-                    {rule.ruleIndex}
-                </Box>
-            </TableCell>
-            <TableCell>
-                <Box display="flex" alignItems="center" gap={1}>
-                    <DragIndicatorIcon fontSize="small"/>
-                    {rule.ruleIndex}
-                </Box>
-            </TableCell>
-            <TableCell>
-                <Chip
-                    icon={rule.action === 'Block' ? <BlockIcon/> : <CheckCircleIcon/>}
-                    label={rule.action}
-                    color={rule.action === 'Block' ? 'error' : 'success'}
-                />
-            </TableCell>
-            <TableCell>{rule.name}</TableCell>
-            <TableCell>
-                <Box display="flex" flexWrap="wrap" gap={1}>
-                    {rule.source.map((s) => (<Chip key={s.email} label={s.name} variant="outlined"/>))}
-                </Box>
-            </TableCell>
-            <TableCell>
-                <Box display="flex" flexWrap="wrap" gap={1}>
-                    {rule.destination.map((d) => (<Chip key={d.address} label={d.name} icon={<TagIcon/>}/>))}
-                </Box>
-            </TableCell>
-            <TableCell align="center">
-                <IconButton
-                    color="error"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(rule._id);
-                    }}
-                >
-                    <DeleteIcon/>
-                </IconButton>
-            </TableCell>
-        </TableRow>);
+                {rule.ruleIndex}
+            </Box>
+        </TableCell>
+        <TableCell>
+            <Chip
+                icon={rule.action === 'Block' ? <BlockIcon/> : <CheckCircleIcon/>}
+                label={rule.action}
+                color={rule.action === 'Block' ? 'error' : 'success'}
+            />
+        </TableCell>
+        <TableCell>{rule.name}</TableCell>
+        <TableCell>
+            <Box display="flex" flexWrap="wrap" gap={1}>
+                {rule.source.map((s) => (<Chip key={s.email} label={s.name} variant="outlined"/>))}
+            </Box>
+        </TableCell>
+        <TableCell>
+            <Box display="flex" flexWrap="wrap" gap={1}>
+                {rule.destination.map((d) => (<Chip key={d.address} label={d.name} icon={<TagIcon/>}/>))}
+            </Box>
+        </TableCell>
+        <TableCell align="center">
+            <IconButton
+                color="error"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(rule._id);
+                }}
+            >
+                <DeleteIcon/>
+            </IconButton>
+        </TableCell>
+    </TableRow>);
 };
