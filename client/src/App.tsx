@@ -1,4 +1,4 @@
-import { RulesPage } from './pages/RulesPage';
+import {RulesPage} from "./pages/RulesPage";
 
 function App() {
   return (
