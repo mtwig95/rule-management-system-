@@ -24,17 +24,18 @@ export interface RuleDocument extends Document {
 const RuleSchema = new Schema<RuleDocument>(
     {
         tenantId: { type: String, required: true },
+        name: { type: String },
         ruleIndex: { type: Number, required: true },
         source: [
             {
-                name: { type: String, required: true },
-                email: { type: String, required: true },
+                name: { type: String },
+                email: { type: String },
             },
         ],
         destination: [
             {
-                name: { type: String, required: true },
-                address: { type: String, required: true },
+                name: { type: String },
+                address: { type: String },
             },
         ],
         action: {

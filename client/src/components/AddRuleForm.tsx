@@ -19,6 +19,7 @@ type Props = {
 };
 
 export const AddRuleForm: React.FC<Props> = ({ tenantId, onSuccess }) => {
+    const [ruleName, setRuleName] = useState('');
     const [action, setAction] = useState<'Allow' | 'Block'>('Allow');
     const [sources, setSources] = useState([{ name: '', email: '' }]);
     const [destinations, setDestinations] = useState([{ name: '', address: '' }]);
@@ -26,16 +27,23 @@ export const AddRuleForm: React.FC<Props> = ({ tenantId, onSuccess }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+    try {
         await createRule({
             tenantId,
+            name: ruleName,
             action,
             source: sources,
             destination: destinations,
         });
 
         onSuccess();
+        setRuleName('');
         setSources([{ name: '', email: '' }]);
         setDestinations([{ name: '', address: '' }]);
+    } catch (err: any) {
+        console.error('Failed to create rule:', err);
+        alert('Failed to create rule: ' + (err.response?.data?.message || err.message));
+    }
     };
 
     const handleAddSource = () => setSources([...sources, { name: '', email: '' }]);
@@ -51,6 +59,15 @@ export const AddRuleForm: React.FC<Props> = ({ tenantId, onSuccess }) => {
             </Typography>
 
             <form onSubmit={handleSubmit}>
+                <TextField
+                    label="Rule Name"
+                    value={ruleName}
+                    onChange={(e) => setRuleName(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+
                 <TextField
                     select
                     label="Action"

@@ -98,7 +98,8 @@ const SortableRow = ({rule, onDelete}: { rule: Rule, onDelete: (id: string) => v
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule._id});
 
     const style = {
-        transform: CSS.Transform.toString(transform), transition, cursor: 'grab'
+        transform: CSS.Transform.toString(transform),
+        transition
     };
 
     return (<TableRow ref={setNodeRef} style={style}

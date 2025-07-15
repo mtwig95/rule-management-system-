@@ -37,7 +37,7 @@ export const getRulesByTenant = async (req: Request, res: Response) => {
 
 export const createRule = async (req: Request, res: Response) => {
     try {
-        const { tenantId, source, destination, action } = req.body;
+        const { tenantId, source, destination, action, name } = req.body;
 
         if (!tenantId || !source || !destination || !action) {
       const error = new Error('Missing required fields') as AppError;
@@ -52,6 +52,7 @@ export const createRule = async (req: Request, res: Response) => {
 
         const newRule = await RuleModel.create({
             tenantId,
+            name,
             source,
             destination,
             action,
