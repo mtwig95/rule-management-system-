@@ -1,14 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import { RuleTable } from '../components/RuleTable';
-import { AddRuleForm } from '../components/AddRuleForm';
-import { Rule } from '../types/rule';
-import { getRules, deleteRule } from '../api/rules';
+import {RuleTable} from '../components/RuleTable';
+import {AddRuleForm} from '../components/AddRuleForm';
+import {Rule} from '../types/rule';
+import {deleteRule, getRules} from '../api/rules';
+import {Box, Button, Collapse, Paper, Typography} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 
 export const RulesPage = () => {
     const tenantId = 'org123';
     const [rules, setRules] = useState<Rule[]>([]);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
+    const [showAddForm, setShowAddForm] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const limit = 4;
 
@@ -31,10 +35,34 @@ export const RulesPage = () => {
         }
     };
 
-    return (
-        <div className="p-6 space-y-4">
-            <h1 className="text-2xl font-bold">Rule Management - {tenantId}</h1>
-            <AddRuleForm tenantId={tenantId} onSuccess={refetchRules} />
+    return (<Box p={4} display="flex" flexDirection="column" gap={3}>
+            <Typography variant="h4" fontWeight="bold">
+                Rule Management - {tenantId}
+            </Typography>
+
+            <Box display="flex" justifyContent="flex-end">
+                <Button
+                    variant={showAddForm ? 'outlined' : 'contained'}
+                    color="primary"
+                    startIcon={showAddForm ? <CloseIcon/> : <AddIcon/>}
+                    onClick={() => setShowAddForm(prev => !prev)}
+                >
+                    {showAddForm ? 'Cancel' : 'Add Rule'}
+                </Button>
+            </Box>
+
+            <Collapse in={showAddForm}>
+                <Paper elevation={3} sx={{p: 3, mt: 1}}>
+                    <AddRuleForm
+                        tenantId={tenantId}
+                        onSuccess={() => {
+                            refetchRules();
+                            setShowAddForm(false);
+                        }}
+                    />
+                </Paper>
+            </Collapse>
+
             <RuleTable
                 tenantId={tenantId}
                 rules={rules}
@@ -44,6 +72,5 @@ export const RulesPage = () => {
                 onDelete={handleDeleteRule}
                 onReorder={refetchRules}
             />
-        </div>
-    );
+        </Box>);
 };
