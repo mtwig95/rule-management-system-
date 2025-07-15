@@ -15,8 +15,6 @@ Built with **React** and **MUI**, the UI currently supports:
 
 
 
-**Before reordering:**
-
 <img width="1487" height="352" alt="Screenshot 2025-07-15 at 16 04 18" src="https://github.com/user-attachments/assets/8f9c9805-bc3a-4f7f-93b6-82db9c3fd7e1" />
 
 
