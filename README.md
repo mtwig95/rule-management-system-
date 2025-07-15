@@ -58,6 +58,5 @@ npm run dev
 3. Start the frontend
 ```
 cd client
-npm install
-npm run dev
+npm start
 ```
