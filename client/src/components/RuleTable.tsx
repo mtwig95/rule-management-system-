@@ -2,14 +2,17 @@ import {
     Box,
     Chip,
     IconButton,
+    MenuItem,
     Pagination,
     Paper,
+    Select,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    TextField
 } from '@mui/material';
 import {closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
@@ -18,11 +21,16 @@ import {Rule} from "../types/rule";
 import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Check';
 import TagIcon from '@mui/icons-material/LocalOffer';
-import {reorderRule} from '../api/rules';
+import {reorderRule, updateRule} from '../api/rules';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import {useState} from 'react';
 
 type Props = {
+    tenantId: string;
     rules: Rule[];
     total: number;
     page: number;
@@ -33,10 +41,11 @@ type Props = {
 
 const limit = 4;
 
-export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder}: Props) => {
+export const RuleTable = ({tenantId, rules, total, page, onPageChange, onDelete, onReorder}: Props) => {
     const totalPages = Math.ceil(total / limit);
 
     const sensors = useSensors(useSensor(PointerSensor));
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const {active, over} = event;
@@ -72,18 +81,27 @@ export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder
                                 <TableCell sx={{color: '#fff'}}>Name</TableCell>
                                 <TableCell sx={{color: '#fff'}}>Source</TableCell>
                                 <TableCell sx={{color: '#fff'}}>Destination</TableCell>
-                                <TableCell sx={{color: '#fff'}} align="center">Delete</TableCell>
+                                <TableCell sx={{color: '#fff'}} align="center">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {[...rules].reverse().map((rule, index) => (
-                                <SortableRow
-                                    key={rule._id}
-                                    rule={rule}
-                                    onDelete={onDelete}
-                                    displayIndex={index + 1}
-                                />
-                            ))}
+                            {[...rules].reverse().map((rule, index) => (editingId === rule._id ? (<EditableRuleRow
+                                key={rule._id}
+                                rule={rule}
+                                tenantId={tenantId}
+                                displayIndex={index + 1}
+                                onCancel={() => setEditingId(null)}
+                                onSave={() => {
+                                    setEditingId(null);
+                                    onReorder();
+                                }}
+                            />) : (<SortableRow
+                                key={rule._id}
+                                rule={rule}
+                                onDelete={onDelete}
+                                displayIndex={index + 1}
+                                onEdit={() => setEditingId(rule._id)}
+                            />)))}
                         </TableBody>
                     </Table>
                 </SortableContext>
@@ -102,13 +120,9 @@ export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder
 };
 
 const SortableRow = ({
-                         rule,
-                         onDelete,
-                         displayIndex,
+                         rule, onDelete, displayIndex, onEdit
                      }: {
-    rule: Rule;
-    onDelete: (id: string) => void;
-    displayIndex: number;
+    rule: Rule; onDelete: (id: string) => void; displayIndex: number; onEdit: () => void;
 }) => {
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule._id});
 
@@ -146,15 +160,49 @@ const SortableRow = ({
             </Box>
         </TableCell>
         <TableCell align="center">
-            <IconButton
-                color="error"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(rule._id);
-                }}
-            >
-                <DeleteIcon/>
-            </IconButton>
+            <IconButton onClick={onEdit}><EditIcon/></IconButton>
+            <IconButton color="error" onClick={() => onDelete(rule._id)}><DeleteIcon/></IconButton>
+        </TableCell>
+    </TableRow>);
+};
+
+const EditableRuleRow = ({
+                             rule, tenantId, displayIndex, onCancel, onSave
+                         }: {
+    rule: Rule; tenantId: string; displayIndex: number; onCancel: () => void; onSave: (updated?: Rule) => void;
+}) => {
+    const [name, setName] = useState(rule.name);
+    const [action, setAction] = useState(rule.action);
+    const [loading, setLoading] = useState(false);
+
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            const response = await updateRule(rule._id, {name, action, tenantId});
+            onSave(response.data);
+        } catch (error) {
+            console.error('Failed to update rule', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (<TableRow sx={{backgroundColor: '#fffbe6'}}>
+        <TableCell>{displayIndex}</TableCell>
+        <TableCell>
+            <Select value={action} onChange={(e) => setAction(e.target.value as 'Allow' | 'Block')} size="small">
+                <MenuItem value="Allow">Allow</MenuItem>
+                <MenuItem value="Block">Block</MenuItem>
+            </Select>
+        </TableCell>
+        <TableCell>
+            <TextField value={name} onChange={(e) => setName(e.target.value)} size="small"/>
+        </TableCell>
+        <TableCell>—</TableCell>
+        <TableCell>—</TableCell>
+        <TableCell align="center">
+            <IconButton onClick={onCancel} disabled={loading}><CloseIcon/></IconButton>
+            <IconButton onClick={handleSave} disabled={loading}><SaveIcon/></IconButton>
         </TableCell>
     </TableRow>);
 };

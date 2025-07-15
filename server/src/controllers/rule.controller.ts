@@ -67,7 +67,7 @@ export const createRule = async (req: Request, res: Response) => {
 export const updateRule = async (req: Request, res: Response) => {
     try {
         const ruleId = req.params.id;
-        const {tenantId, source, destination, action} = req.body;
+        const {tenantId, name, source, destination, action} = req.body;
 
         if (!ruleId) {
             throw Object.assign(new Error('Missing rule ID'), {statusCode: 400});
@@ -93,6 +93,7 @@ export const updateRule = async (req: Request, res: Response) => {
         rule.source = source ?? rule.source;
         rule.destination = destination ?? rule.destination;
         rule.action = action ?? rule.action;
+        rule.name = name ?? rule.name;
 
         await rule.save();
 

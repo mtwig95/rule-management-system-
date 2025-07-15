@@ -23,7 +23,6 @@ export const RulesPage = () => {
 
     const handleDeleteRule = async (ruleId: string) => {
         try {
-            console.log('delete - 0');
             await deleteRule(ruleId);
             refetchRules();
         } catch (error) {
@@ -37,6 +36,7 @@ export const RulesPage = () => {
             <h1 className="text-2xl font-bold">Rule Management - {tenantId}</h1>
             <AddRuleForm tenantId={tenantId} onSuccess={refetchRules} />
             <RuleTable
+                tenantId={tenantId}
                 rules={rules}
                 total={total}
                 page={page}

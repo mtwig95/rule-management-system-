@@ -26,3 +26,8 @@ export const reorderRule = async (
 ) => {
   return api.post(`/rules/${id}/reorder`, data);
 };
+
+export const updateRule = async (id: string, updated: Partial<Rule>) => {
+  const res = await api.put(`/rules/${id}`, updated);
+  return res.data;
+};
