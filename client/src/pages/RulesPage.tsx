@@ -23,6 +23,7 @@ export const RulesPage = () => {
 
     const handleDeleteRule = async (ruleId: string) => {
         try {
+            console.log('delete - 0');
             await deleteRule(ruleId);
             refetchRules();
         } catch (error) {
