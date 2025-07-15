@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+dist/
+
+# env and logs
+.env
+*.log
+
+# cache
+.cache/
+*.tsbuildinfo
+
+# IDEs
+.idea/
+.vscode/
+EOL
