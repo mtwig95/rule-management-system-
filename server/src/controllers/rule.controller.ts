@@ -109,3 +109,77 @@ export const updateRule = async (req: Request, res: Response) => {
     throw error.statusCode ? error : Object.assign(new Error('Internal Server Error'), { statusCode: 500 });
     }
 };
+
+export const deleteRule = async (req: Request, res: Response) => {
+        try {
+            const deleted = await RuleModel.findByIdAndDelete(req.params.id);
+        if (!deleted) {
+            const error = new Error('Rule not found') as AppError;
+            error.statusCode = 404;
+            throw error;
+        }
+
+            res.status(200).json({ message: 'Rule deleted' });
+    } catch (error: any) {
+        console.error('Error deleting rule:', error);
+        throw error.statusCode ? error : Object.assign(new Error('Internal Server Error'), { statusCode: 500 });
+        }
+};
+
+export const reorderRule = async (req: Request, res: Response) => {
+    try {
+    const { id } = req.params;
+    const { beforeId, afterId } = req.body;
+
+        const rule = await RuleModel.findById(id);
+        if (!rule) {
+            const err = new Error('Rule not found') as AppError;
+            err.statusCode = 404;
+            throw err;
+        }
+
+        let beforeRuleIndex = 0;
+        let afterRuleIndex = 0;
+
+        if (beforeId) {
+            const beforeRule = await RuleModel.findById(beforeId);
+            if (!beforeRule) {
+                const err = new Error('beforeId not found') as AppError;
+                err.statusCode = 400;
+                throw err;
+            }
+            beforeRuleIndex = beforeRule.ruleIndex;
+        }
+
+        if (afterId) {
+            const afterRule = await RuleModel.findById(afterId);
+            if (!afterRule) {
+                const err = new Error('afterId not found') as AppError;
+                err.statusCode = 400;
+                throw err;
+            }
+            afterRuleIndex = afterRule.ruleIndex;
+        }
+
+        let newIndex: number;
+        if (beforeId && afterId) {
+            newIndex = (beforeRuleIndex + afterRuleIndex) / 2;
+        } else if (beforeId) {
+            newIndex = beforeRuleIndex + 1;
+        } else if (afterId) {
+            newIndex = afterRuleIndex - 1;
+        } else {
+            const err = new Error('Must provide beforeId or afterId') as AppError;
+            err.statusCode = 400;
+            throw err;
+        }
+
+        rule.ruleIndex = newIndex;
+        await rule.save();
+
+        res.status(200).json({ message: 'Rule reordered successfully', newIndex });
+    } catch (error: any) {
+        console.error('Reorder rule error:', error);
+        throw error.statusCode ? error : Object.assign(new Error('Internal Server Error'), { statusCode: 500 });
+    }
+};

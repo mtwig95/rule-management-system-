@@ -12,6 +12,7 @@ export interface Destination {
 
 export interface RuleDocument extends Document {
     tenantId: string;
+    name: string;
     ruleIndex: number;
     source: Source[];
     destination: Destination[];
