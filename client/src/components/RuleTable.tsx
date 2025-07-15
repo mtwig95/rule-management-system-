@@ -76,7 +76,14 @@ export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rules.map(rule => (<SortableRow key={rule._id} rule={rule} onDelete={onDelete}/>))}
+                            {[...rules].reverse().map((rule, index) => (
+                                <SortableRow
+                                    key={rule._id}
+                                    rule={rule}
+                                    onDelete={onDelete}
+                                    displayIndex={index + 1}
+                                />
+                            ))}
                         </TableBody>
                     </Table>
                 </SortableContext>
@@ -94,7 +101,15 @@ export const RuleTable = ({rules, total, page, onPageChange, onDelete, onReorder
     </>);
 };
 
-const SortableRow = ({rule, onDelete}: { rule: Rule, onDelete: (id: string) => void }) => {
+const SortableRow = ({
+                         rule,
+                         onDelete,
+                         displayIndex,
+                     }: {
+    rule: Rule;
+    onDelete: (id: string) => void;
+    displayIndex: number;
+}) => {
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule._id});
 
     const style = {
@@ -109,7 +124,7 @@ const SortableRow = ({rule, onDelete}: { rule: Rule, onDelete: (id: string) => v
       <span {...attributes} {...listeners} style={{cursor: 'grab'}}>
         <DragIndicatorIcon fontSize="small"/>
       </span>
-                {rule.ruleIndex}
+                {displayIndex}
             </Box>
         </TableCell>
         <TableCell>
