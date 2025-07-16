@@ -33,15 +33,15 @@ type Props = {
     tenantId: string;
     rules: Rule[];
     total: number;
+    limit: number;
     page: number;
     onPageChange: (page: number) => void;
     onDelete: (ruleId: string) => void;
     onReorder: () => void;
 };
 
-const limit = 4;
 
-export const RuleTable = ({tenantId, rules, total, page, onPageChange, onDelete, onReorder}: Props) => {
+export const RuleTable = ({tenantId, rules, total,limit, page, onPageChange, onDelete, onReorder}: Props) => {
     const totalPages = Math.ceil(total / limit);
 
     const sensors = useSensors(useSensor(PointerSensor));

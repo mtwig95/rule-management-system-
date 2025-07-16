@@ -5,7 +5,7 @@ export const getRules = async (
     tenantId: string,
     page: number,
     limit: number = 10
-): Promise<{ data: Rule[]; total: number }> => {
+): Promise<{ data: Rule[]; total: number; limit: number ; page: number }> => {
   const response = await api.get(`/rules/${tenantId}?page=${page}&limit=${limit}`);
   return response.data;
 };
