@@ -28,6 +28,7 @@ import TagIcon from '@mui/icons-material/LocalOffer';
 import {reorderRule, updateRule} from '../api/rules';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useState} from 'react';
+import {EditableRuleRow} from "./EditableRuleRow";
 
 type Props = {
     tenantId: string;
@@ -162,47 +163,6 @@ const SortableRow = ({
         <TableCell align="center">
             <IconButton onClick={onEdit}><EditIcon/></IconButton>
             <IconButton color="error" onClick={() => onDelete(rule._id)}><DeleteIcon/></IconButton>
-        </TableCell>
-    </TableRow>);
-};
-
-const EditableRuleRow = ({
-                             rule, tenantId, displayIndex, onCancel, onSave
-                         }: {
-    rule: Rule; tenantId: string; displayIndex: number; onCancel: () => void; onSave: (updated?: Rule) => void;
-}) => {
-    const [name, setName] = useState(rule.name);
-    const [action, setAction] = useState(rule.action);
-    const [loading, setLoading] = useState(false);
-
-    const handleSave = async () => {
-        try {
-            setLoading(true);
-            const response = await updateRule(rule._id, {name, action, tenantId});
-            onSave(response.data);
-        } catch (error) {
-            console.error('Failed to update rule', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (<TableRow sx={{backgroundColor: '#fffbe6'}}>
-        <TableCell>{displayIndex}</TableCell>
-        <TableCell>
-            <Select value={action} onChange={(e) => setAction(e.target.value as 'Allow' | 'Block')} size="small">
-                <MenuItem value="Allow">Allow</MenuItem>
-                <MenuItem value="Block">Block</MenuItem>
-            </Select>
-        </TableCell>
-        <TableCell>
-            <TextField value={name} onChange={(e) => setName(e.target.value)} size="small"/>
-        </TableCell>
-        <TableCell>—</TableCell>
-        <TableCell>—</TableCell>
-        <TableCell align="center">
-            <IconButton onClick={onCancel} disabled={loading}><CloseIcon/></IconButton>
-            <IconButton onClick={handleSave} disabled={loading}><SaveIcon/></IconButton>
         </TableCell>
     </TableRow>);
 };
