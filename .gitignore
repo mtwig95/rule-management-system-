@@ -1,19 +1,22 @@
-../client/node_modules/
-../.idea
-
-# dependencies
+# Dependencies
+client/node_modules/
 node_modules/
+
+# Build output
+client/dist/
 dist/
 
-# env and logs
+# Env and logs
+client/.env
 .env
 *.log
 
-# cache
+# Cache
 .cache/
 *.tsbuildinfo
 
 # IDEs
 .idea/
+client/.idea/
 .vscode/
-EOL
+client/.vscode/
