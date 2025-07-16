@@ -152,12 +152,20 @@ const SortableRow = ({
         <TableCell>{rule.name}</TableCell>
         <TableCell>
             <Box display="flex" flexWrap="wrap" gap={1}>
-                {rule.source.map((s) => (<Chip key={s.email} label={s.name} variant="outlined"/>))}
+                {rule.source.map((s, index) => (
+                    <Chip key={`${s.email || 'no-email'}-${index}`} label={s.name} variant="outlined" />
+                ))}
             </Box>
         </TableCell>
         <TableCell>
             <Box display="flex" flexWrap="wrap" gap={1}>
-                {rule.destination.map((d) => (<Chip key={d.address} label={d.name} icon={<TagIcon/>}/>))}
+                {rule.destination.map((d, index) => (
+                    <Chip
+                        key={`${d.address || 'no-address'}-${index}`}
+                        label={d.name}
+                        icon={<TagIcon />}
+                    />
+                ))}
             </Box>
         </TableCell>
         <TableCell align="center">
