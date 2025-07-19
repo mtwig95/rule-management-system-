@@ -11,7 +11,7 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.error('🔴 Error:', err.message);
+    console.error('🛑 [errorHandler] Called with error:', err.message);
 
     const status = err.statusCode || 500;
     const response = {
