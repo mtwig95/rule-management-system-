@@ -2,17 +2,14 @@ import {
     Box,
     Chip,
     IconButton,
-    MenuItem,
     Pagination,
     Paper,
-    Select,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
-    TextField
+    TableRow
 } from '@mui/material';
 import {closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
@@ -22,10 +19,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Check';
 import TagIcon from '@mui/icons-material/LocalOffer';
-import {reorderRule, updateRule} from '../api/rules';
+import {reorderRule} from '../api/rules';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useState} from 'react';
 import {EditableRuleRow} from "./EditableRuleRow";
@@ -42,7 +37,7 @@ type Props = {
 };
 
 
-export const RuleTable = ({tenantId, rules, total,limit, page, onPageChange, onDelete, onReorder}: Props) => {
+export const RuleTable = ({tenantId, rules, total, limit, page, onPageChange, onDelete, onReorder}: Props) => {
     const totalPages = Math.ceil(total / limit);
 
     const sensors = useSensors(useSensor(PointerSensor));
@@ -139,7 +134,7 @@ const SortableRow = ({
       <span {...attributes} {...listeners} style={{cursor: 'grab'}}>
         <DragIndicatorIcon fontSize="small"/>
       </span>
-                {displayIndex}
+                {displayIndex} - {rule.ruleIndex}
             </Box>
         </TableCell>
         <TableCell>
@@ -153,19 +148,16 @@ const SortableRow = ({
         <TableCell>
             <Box display="flex" flexWrap="wrap" gap={1}>
                 {rule.source.map((s, index) => (
-                    <Chip key={`${s.email || 'no-email'}-${index}`} label={s.name} variant="outlined" />
-                ))}
+                    <Chip key={`${s.email || 'no-email'}-${index}`} label={s.name} variant="outlined"/>))}
             </Box>
         </TableCell>
         <TableCell>
             <Box display="flex" flexWrap="wrap" gap={1}>
-                {rule.destination.map((d, index) => (
-                    <Chip
+                {rule.destination.map((d, index) => (<Chip
                         key={`${d.address || 'no-address'}-${index}`}
                         label={d.name}
-                        icon={<TagIcon />}
-                    />
-                ))}
+                        icon={<TagIcon/>}
+                    />))}
             </Box>
         </TableCell>
         <TableCell align="center">

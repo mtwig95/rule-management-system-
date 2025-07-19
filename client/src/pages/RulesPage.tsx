@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const RulesPage = () => {
-    const tenantId = 'org123';
+    const [tenantId, setTenantId] = useState('org123');
     const [rules, setRules] = useState<Rule[]>([]);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
@@ -39,9 +39,21 @@ export const RulesPage = () => {
         <Box sx={{mx: 'auto', maxWidth: 1200, px: 2}}>
             <Paper elevation={3} sx={{p: 4, borderRadius: 3}}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                    <Typography variant="h4" fontWeight="bold" color="text.primary">
-                        Rule Management – {tenantId}
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Typography variant="h4" fontWeight="bold" color="text.primary">
+                            Rule Management
+                        </Typography>
+                        <TextField
+                            label="Tenant ID"
+                            value={tenantId}
+                            onChange={(e) => {
+                                setTenantId(e.target.value);
+                                setPage(1); // reset page on tenant change
+                            }}
+                            size="small"
+                            sx={{width: 200}}
+                        />
+                    </Box>
 
                     <Button
                         variant={showAddForm ? 'outlined' : 'contained'}
