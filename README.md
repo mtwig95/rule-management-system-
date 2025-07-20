@@ -1,5 +1,8 @@
 # Rule Management System
 
+<img width="1022" height="719" alt="Screenshot 2025-07-20 at 11 49 33" src="https://github.com/user-attachments/assets/1db51e8b-6090-48b4-9f5f-d0c5ebe8c425" />
+
+
 A lightweight system for managing security rules by tenant, supporting creation, viewing, deletion, and reordering.
 
 <img width="1512" height="982" alt="Screenshot 2025-07-15 at 16 05 02" src="https://github.com/user-attachments/assets/56462804-3016-4476-a74a-51e12cd6e715" />
