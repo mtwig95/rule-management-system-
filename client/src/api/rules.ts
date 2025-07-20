@@ -1,17 +1,19 @@
-import { api } from './axios';
-import { Rule } from '../types/rule';
+import { api } from "./axios";
+import { Rule } from "../types/rule";
 
 export const getRules = async (
-    tenantId: string,
-    page: number,
-    limit: number = 10
-): Promise<{ data: Rule[]; total: number; limit: number ; page: number }> => {
-  const response = await api.get(`/rules/${tenantId}?page=${page}&limit=${limit}`);
+  tenantId: string,
+  page: number,
+  limit: number = 10,
+): Promise<{ data: Rule[]; total: number; limit: number; page: number }> => {
+  const response = await api.get(
+    `/rules/${tenantId}?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };
 
 export const createRule = async (rule: Partial<Rule>) => {
-  const res = await api.post('/rules', rule);
+  const res = await api.post("/rules", rule);
   return res.data;
 };
 
@@ -21,8 +23,8 @@ export const deleteRule = async (ruleId: string) => {
 };
 
 export const reorderRule = async (
-    id: string,
-    data: { beforeId?: string | null; afterId?: string | null }
+  id: string,
+  data: { beforeId?: string | null; afterId?: string | null },
 ) => {
   return api.post(`/rules/${id}/reorder`, data);
 };
@@ -33,6 +35,6 @@ export const updateRule = async (id: string, updated: Partial<Rule>) => {
 };
 
 export const bulkUpdateRules = async (rules: Partial<Rule>[]) => {
-  const res = await api.post(`/rules/bulk-update`, {rules});
+  const res = await api.post(`/rules/bulk-update`, { rules });
   return res.data;
 };

@@ -1,181 +1,233 @@
 import {
-    Box,
-    Chip,
-    IconButton,
-    Pagination,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow
-} from '@mui/material';
-import {closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors} from '@dnd-kit/core';
-import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-import {Rule} from "../types/rule";
-import DeleteIcon from '@mui/icons-material/Delete';
-import BlockIcon from '@mui/icons-material/Block';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EditIcon from '@mui/icons-material/Edit';
-import TagIcon from '@mui/icons-material/LocalOffer';
-import {reorderRule} from '../api/rules';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import {useState} from 'react';
-import {EditableRuleRow} from "./EditableRuleRow";
+  Box,
+  Chip,
+  IconButton,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Rule } from "../types/rule";
+import DeleteIcon from "@mui/icons-material/Delete";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import EditIcon from "@mui/icons-material/Edit";
+import TagIcon from "@mui/icons-material/LocalOffer";
+import { reorderRule } from "../api/rules";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { useState } from "react";
+import { EditableRuleRow } from "./EditableRuleRow";
+import React from "react";
 
 type Props = {
-    tenantId: string,
-    rules: Rule[],
-    total: number,
-    limit: number,
-    page: number,
-    onPageChange: (page: number) => void,
-    onDelete: (ruleId: string) => void,
-    onReorder: () => void,
-    onEditChange?: (id: string, updatedFields: Partial<Rule>) => void
+  tenantId: string;
+  rules: Rule[];
+  total: number;
+  limit: number;
+  page: number;
+  onPageChange: (page: number) => void;
+  onDelete: (ruleId: string) => void;
+  onReorder: () => void;
+  onEditChange?: (id: string, updatedFields: Partial<Rule>) => void;
 };
 
-
 export const RuleTable = ({
-                              tenantId,
-                              rules,
-                              total,
-                              limit,
-                              page,
-                              onPageChange,
-                              onDelete,
-                              onReorder,
-                              onEditChange
-                          }: Props) => {
-    const totalPages = Math.ceil(total / limit);
+  tenantId,
+  rules,
+  total,
+  limit,
+  page,
+  onPageChange,
+  onDelete,
+  onReorder,
+  onEditChange,
+}: Props) => {
+  const totalPages = Math.ceil(total / limit);
 
-    const sensors = useSensors(useSensor(PointerSensor));
-    const [editingId, setEditingId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor));
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-    const handleDragEnd = async (event: DragEndEvent) => {
-        const {active, over} = event;
-        if (!over || active.id === over.id) return;
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-        const oldIndex = rules.findIndex(r => r._id === active.id);
-        const newIndex = rules.findIndex(r => r._id === over.id);
-        const newOrder = arrayMove(rules, oldIndex, newIndex);
+    const oldIndex = rules.findIndex((r) => r._id === active.id);
+    const newIndex = rules.findIndex((r) => r._id === over.id);
+    const newOrder = arrayMove(rules, oldIndex, newIndex);
 
-        const before = newOrder[newIndex - 1]?._id || null;
-        const after = newOrder[newIndex + 1]?._id || null;
+    const before = newOrder[newIndex - 1]?._id || null;
+    const after = newOrder[newIndex + 1]?._id || null;
 
-        try {
-            await reorderRule(active.id as string, {beforeId: before, afterId: after});
-            onReorder();
-        } catch (e) {
-            console.error('Reorder failed', e);
-            alert(`Failed to reorder rule`);
-        }
-    };
+    try {
+      await reorderRule(active.id as string, {
+        beforeId: before,
+        afterId: after,
+      });
+      onReorder();
+    } catch (e) {
+      console.error("Reorder failed", e);
+      alert(`Failed to reorder rule`);
+    }
+  };
 
-    return (<>
-        <TableContainer component={Paper}>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext
-                    items={rules.map(rule => rule._id)}
-                    strategy={verticalListSortingStrategy}
-                >
-                    <Table>
-                        <TableHead sx={{backgroundColor: '#1f2a44'}}>
-                            <TableRow>
-                                <TableCell sx={{color: '#fff'}}>#</TableCell>
-                                <TableCell sx={{color: '#fff'}}>Action</TableCell>
-                                <TableCell sx={{color: '#fff'}}>Name</TableCell>
-                                <TableCell sx={{color: '#fff'}}>Source</TableCell>
-                                <TableCell sx={{color: '#fff'}}>Destination</TableCell>
-                                <TableCell sx={{color: '#fff'}} align="center">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {[...rules].reverse().map((rule, index) => (editingId === rule._id ? (<EditableRuleRow
-                                key={rule._id}
-                                rule={rule}
-                                tenantId={tenantId}
-                                displayIndex={index + 1}
-                                onCancel={() => setEditingId(null)}
-                                onSave={() => {
-                                    setEditingId(null);
-                                    onReorder();
-                                }}
-                                onEditChange={onEditChange!}
-                            />) : (<SortableRow
-                                key={rule._id}
-                                rule={rule}
-                                onDelete={onDelete}
-                                displayIndex={index + 1}
-                                onEdit={() => setEditingId(rule._id)}
-                            />)))}
-                        </TableBody>
-                    </Table>
-                </SortableContext>
-            </DndContext>
-        </TableContainer>
+  return (
+    <>
+      <TableContainer component={Paper}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={rules.map((rule) => rule._id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Table>
+              <TableHead sx={{ backgroundColor: "#1f2a44" }}>
+                <TableRow>
+                  <TableCell sx={{ color: "#fff" }}>#</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>Action</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>Name</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>Source</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>Destination</TableCell>
+                  <TableCell sx={{ color: "#fff" }} align="center">
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {[...rules].reverse().map((rule, index) =>
+                  editingId === rule._id ? (
+                    <EditableRuleRow
+                      key={rule._id}
+                      rule={rule}
+                      tenantId={tenantId}
+                      displayIndex={index + 1}
+                      onCancel={() => setEditingId(null)}
+                      onSave={() => {
+                        setEditingId(null);
+                        onReorder();
+                      }}
+                      onEditChange={onEditChange!}
+                    />
+                  ) : (
+                    <SortableRow
+                      key={rule._id}
+                      rule={rule}
+                      onDelete={onDelete}
+                      displayIndex={index + 1}
+                      onEdit={() => setEditingId(rule._id)}
+                    />
+                  ),
+                )}
+              </TableBody>
+            </Table>
+          </SortableContext>
+        </DndContext>
+      </TableContainer>
 
-        <Box mt={2} display="flex" justifyContent="center">
-            <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(e, value) => onPageChange(value)}
-                color="primary"
-            />
-        </Box>
-    </>);
+      <Box mt={2} display="flex" justifyContent="center">
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(e, value) => onPageChange(value)}
+          color="primary"
+        />
+      </Box>
+    </>
+  );
 };
 
 const SortableRow = ({
-                         rule, onDelete, displayIndex, onEdit
-                     }: {
-    rule: Rule; onDelete: (id: string) => void; displayIndex: number; onEdit: () => void;
+  rule,
+  onDelete,
+  displayIndex,
+  onEdit,
+}: {
+  rule: Rule;
+  onDelete: (id: string) => void;
+  displayIndex: number;
+  onEdit: () => void;
 }) => {
-    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: rule._id});
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: rule._id });
 
-    const style = {
-        transform: CSS.Transform.toString(transform), transition
-    };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
-    return (<TableRow ref={setNodeRef} style={style}
-                      sx={{backgroundColor: rule.action === 'Block' ? '#f9f9f9' : '#eaf4ea'}}>
-
-        <TableCell>
-            <Box display="flex" alignItems="center" gap={1}>
-      <span {...attributes} {...listeners} style={{cursor: 'grab'}}>
-        <DragIndicatorIcon fontSize="small"/>
-      </span>
-                {displayIndex}
-            </Box>
-        </TableCell>
-        <TableCell>
+  return (
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      sx={{ backgroundColor: rule.action === "Block" ? "#f9f9f9" : "#eaf4ea" }}
+    >
+      <TableCell>
+        <Box display="flex" alignItems="center" gap={1}>
+          <span {...attributes} {...listeners} style={{ cursor: "grab" }}>
+            <DragIndicatorIcon fontSize="small" />
+          </span>
+          {displayIndex}
+        </Box>
+      </TableCell>
+      <TableCell>
+        <Chip
+          icon={rule.action === "Block" ? <BlockIcon /> : <CheckCircleIcon />}
+          label={rule.action}
+          color={rule.action === "Block" ? "error" : "success"}
+        />
+      </TableCell>
+      <TableCell>{rule.name}</TableCell>
+      <TableCell>
+        <Box display="flex" flexWrap="wrap" gap={1}>
+          {rule.source.map((s, index) => (
             <Chip
-                icon={rule.action === 'Block' ? <BlockIcon/> : <CheckCircleIcon/>}
-                label={rule.action}
-                color={rule.action === 'Block' ? 'error' : 'success'}
+              key={`${s.email || "no-email"}-${index}`}
+              label={s.name}
+              variant="outlined"
             />
-        </TableCell>
-        <TableCell>{rule.name}</TableCell>
-        <TableCell>
-            <Box display="flex" flexWrap="wrap" gap={1}>
-                {rule.source.map((s, index) => (
-                    <Chip key={`${s.email || 'no-email'}-${index}`} label={s.name} variant="outlined"/>))}
-            </Box>
-        </TableCell>
-        <TableCell>
-            <Box display="flex" flexWrap="wrap" gap={1}>
-                {rule.destination.map((d, index) => (<Chip
-                    key={`${d.address || 'no-address'}-${index}`}
-                    label={d.name}
-                    icon={<TagIcon/>}
-                />))}
-            </Box>
-        </TableCell>
-        <TableCell align="center">
-            <IconButton onClick={onEdit}><EditIcon/></IconButton>
-            <IconButton color="error" onClick={() => onDelete(rule._id)}><DeleteIcon/></IconButton>
-        </TableCell>
-    </TableRow>);
+          ))}
+        </Box>
+      </TableCell>
+      <TableCell>
+        <Box display="flex" flexWrap="wrap" gap={1}>
+          {rule.destination.map((d, index) => (
+            <Chip
+              key={`${d.address || "no-address"}-${index}`}
+              label={d.name}
+              icon={<TagIcon />}
+            />
+          ))}
+        </Box>
+      </TableCell>
+      <TableCell align="center">
+        <IconButton onClick={onEdit}>
+          <EditIcon />
+        </IconButton>
+        <IconButton color="error" onClick={() => onDelete(rule._id)}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  );
 };

@@ -15,19 +15,19 @@ Supports creating, editing, deleting, and reordering rules through a user-friend
 
 ### 🖥️ Frontend (React + MUI)
 
-* Rule table with pagination, sorting, and drag-and-drop reordering
-* Add new rules with multi-source & multi-destination support
-* Inline editing with “save all” bulk update
-* Delete rule with confirmation
-* Visual indicators for rule state and index
+- Rule table with pagination, sorting, and drag-and-drop reordering
+- Add new rules with multi-source & multi-destination support
+- Inline editing with “save all” bulk update
+- Delete rule with confirmation
+- Visual indicators for rule state and index
 
 ### 🛠️ Backend (Node.js + Express + MongoDB)
 
-* CRUD API for tenant-specific rule management
-* Efficient reordering with `beforeId` / `afterId` logic (O(1))
-* Bulk update endpoint for editing multiple rules at once
-* Centralized error handling
-* Clean, modular controller/service structure
+- CRUD API for tenant-specific rule management
+- Efficient reordering with `beforeId` / `afterId` logic (O(1))
+- Bulk update endpoint for editing multiple rules at once
+- Centralized error handling
+- Clean, modular controller/service structure
 
 ---
 
@@ -78,7 +78,6 @@ npm start
 ```
 
 ---
-
 
 ## 👤 Author
 
