@@ -31,3 +31,8 @@ export const updateRule = async (id: string, updated: Partial<Rule>) => {
   const res = await api.put(`/rules/${id}`, updated);
   return res.data;
 };
+
+export const bulkUpdateRules = async (rules: Partial<Rule>[]) => {
+  const res = await api.post(`/rules/bulk-update`, {rules});
+  return res.data;
+};

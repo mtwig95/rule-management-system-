@@ -26,18 +26,29 @@ import {useState} from 'react';
 import {EditableRuleRow} from "./EditableRuleRow";
 
 type Props = {
-    tenantId: string;
-    rules: Rule[];
-    total: number;
-    limit: number;
-    page: number;
-    onPageChange: (page: number) => void;
-    onDelete: (ruleId: string) => void;
-    onReorder: () => void;
+    tenantId: string,
+    rules: Rule[],
+    total: number,
+    limit: number,
+    page: number,
+    onPageChange: (page: number) => void,
+    onDelete: (ruleId: string) => void,
+    onReorder: () => void,
+    onEditChange?: (id: string, updatedFields: Partial<Rule>) => void
 };
 
 
-export const RuleTable = ({tenantId, rules, total, limit, page, onPageChange, onDelete, onReorder}: Props) => {
+export const RuleTable = ({
+                              tenantId,
+                              rules,
+                              total,
+                              limit,
+                              page,
+                              onPageChange,
+                              onDelete,
+                              onReorder,
+                              onEditChange
+                          }: Props) => {
     const totalPages = Math.ceil(total / limit);
 
     const sensors = useSensors(useSensor(PointerSensor));
@@ -91,6 +102,7 @@ export const RuleTable = ({tenantId, rules, total, limit, page, onPageChange, on
                                     setEditingId(null);
                                     onReorder();
                                 }}
+                                onEditChange={onEditChange!}
                             />) : (<SortableRow
                                 key={rule._id}
                                 rule={rule}
@@ -154,10 +166,10 @@ const SortableRow = ({
         <TableCell>
             <Box display="flex" flexWrap="wrap" gap={1}>
                 {rule.destination.map((d, index) => (<Chip
-                        key={`${d.address || 'no-address'}-${index}`}
-                        label={d.name}
-                        icon={<TagIcon/>}
-                    />))}
+                    key={`${d.address || 'no-address'}-${index}`}
+                    label={d.name}
+                    icon={<TagIcon/>}
+                />))}
             </Box>
         </TableCell>
         <TableCell align="center">

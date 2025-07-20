@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {RuleTable} from '../components/RuleTable';
 import {AddRuleForm} from '../components/AddRuleForm';
 import {Rule} from '../types/rule';
-import {deleteRule, getRules} from '../api/rules';
+import {bulkUpdateRules, deleteRule, getRules} from '../api/rules';
 import {Box, Button, Collapse, FormControl, Paper, TextField, Typography} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
@@ -15,6 +15,8 @@ export const RulesPage = () => {
     const [limit, setLimit] = useState(4);
     const [showAddForm, setShowAddForm] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+
+    const [editedRules, setEditedRules] = useState<Record<string, Partial<Rule>>>({});
 
     const refetchRules = () => setRefreshKey(prev => prev + 1);
 
@@ -32,6 +34,30 @@ export const RulesPage = () => {
         } catch (error) {
             console.error('Failed to delete rule:', error);
             alert('Failed to delete rule');
+        }
+    };
+
+    const handleEditChange = (id: string, updatedFields: Partial<Rule>) => {
+        setEditedRules(prev => ({
+            ...prev,
+            [id]: { ...prev[id], ...updatedFields }
+        }));
+    };
+
+    const handleSaveChanges = async () => {
+        try {
+            const rulesToUpdate = Object.entries(editedRules).map(([id, updates]) => ({
+                _id: id,
+                ...updates,
+            }));
+
+            await bulkUpdateRules(rulesToUpdate);
+
+            setEditedRules({});
+            refetchRules();
+        } catch (e) {
+            console.error('Failed to save changes', e);
+            alert('Failed to save changes');
         }
     };
 
@@ -83,7 +109,6 @@ export const RulesPage = () => {
                             type="number"
                             label="Rows per page"
                             size="small"
-                            inputProps={{min: 1, max: 100}}
                             value={limit}
                             onChange={(e) => {
                                 const value = Number(e.target.value);
@@ -106,8 +131,18 @@ export const RulesPage = () => {
                     onPageChange={setPage}
                     onDelete={handleDeleteRule}
                     onReorder={refetchRules}
+                    onEditChange={handleEditChange}
                 />
             </Paper>
         </Box>
+        <Button
+            variant="contained"
+            color="primary"
+            disabled={Object.keys(editedRules).length === 0}
+            onClick={handleSaveChanges}
+        >
+            Save Changes
+        </Button>
+
     </Box>);
 };

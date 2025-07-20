@@ -6,21 +6,22 @@ import {
     TableRow,
     TextField
 } from '@mui/material';
-import { useState } from 'react';
-import { Rule } from '../types/rule';
+import {useState} from 'react';
+import {Rule} from '../types/rule';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Check';
-import { updateRule } from '../api/rules';
+import {updateRule} from '../api/rules';
 
 type Props = {
-    rule: Rule;
-    tenantId: string;
-    displayIndex: number;
-    onCancel: () => void;
-    onSave: (updated?: Rule) => void;
+    rule: Rule,
+    tenantId: string,
+    displayIndex: number,
+    onCancel: () => void,
+    onSave: (updated?: Rule) => void,
+    onEditChange: (id: string, updatedFields: Partial<Rule>) => void;
 };
 
-export const EditableRuleRow = ({ rule, tenantId, displayIndex, onCancel, onSave }: Props) => {
+export const EditableRuleRow = ({rule, tenantId, displayIndex, onCancel, onSave, onEditChange}: Props) => {
     const [name, setName] = useState(rule.name);
     const [action, setAction] = useState(rule.action);
     const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export const EditableRuleRow = ({ rule, tenantId, displayIndex, onCancel, onSave
     const handleSave = async () => {
         try {
             setLoading(true);
-            const response = await updateRule(rule._id, { name, action, tenantId });
+            const response = await updateRule(rule._id, {name, action, tenantId});
             onSave(response.data);
         } catch (error) {
             console.error('Failed to update rule', error);
@@ -38,12 +39,16 @@ export const EditableRuleRow = ({ rule, tenantId, displayIndex, onCancel, onSave
     };
 
     return (
-        <TableRow sx={{ backgroundColor: '#fffbe6' }}>
+        <TableRow sx={{backgroundColor: '#fffbe6'}}>
             <TableCell>{displayIndex}</TableCell>
             <TableCell>
                 <Select
                     value={action}
-                    onChange={(e) => setAction(e.target.value as 'Allow' | 'Block')}
+        onChange={(e) => {
+            const newAction = e.target.value as 'Allow' | 'Block';
+            setAction(newAction);
+            onEditChange(rule._id, { action: newAction });
+        }}
                     size="small"
                 >
                     <MenuItem value="Allow">Allow</MenuItem>
@@ -53,7 +58,11 @@ export const EditableRuleRow = ({ rule, tenantId, displayIndex, onCancel, onSave
             <TableCell>
                 <TextField
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+        onChange={(e) => {
+            const newName = e.target.value;
+            setName(newName);
+            onEditChange(rule._id, { name: newName });
+        }}
                     size="small"
                 />
             </TableCell>
@@ -61,10 +70,10 @@ export const EditableRuleRow = ({ rule, tenantId, displayIndex, onCancel, onSave
             <TableCell>—</TableCell>
             <TableCell align="center">
                 <IconButton onClick={onCancel} disabled={loading}>
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
                 <IconButton onClick={handleSave} disabled={loading}>
-                    <SaveIcon />
+                    <SaveIcon/>
                 </IconButton>
             </TableCell>
         </TableRow>
