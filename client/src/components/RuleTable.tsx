@@ -70,6 +70,7 @@ export const RuleTable = ({
             onReorder();
         } catch (e) {
             console.error('Reorder failed', e);
+            alert(`Failed to reorder rule`);
         }
     };
 
@@ -146,7 +147,7 @@ const SortableRow = ({
       <span {...attributes} {...listeners} style={{cursor: 'grab'}}>
         <DragIndicatorIcon fontSize="small"/>
       </span>
-                {displayIndex} - {rule.ruleIndex}
+                {displayIndex}
             </Box>
         </TableCell>
         <TableCell>

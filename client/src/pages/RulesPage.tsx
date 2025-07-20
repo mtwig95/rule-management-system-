@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const RulesPage = () => {
-    const [tenantId, setTenantId] = useState('org123');
+    const [tenantId, setTenantId] = useState('org-123');
     const [rules, setRules] = useState<Rule[]>([]);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
