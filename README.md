@@ -1,63 +1,87 @@
-# Rule Management System
+# 🛡️ Rule Management System
 
-<img width="1022" height="719" alt="Screenshot 2025-07-20 at 11 49 33" src="https://github.com/user-attachments/assets/1db51e8b-6090-48b4-9f5f-d0c5ebe8c425" />
+A lightweight, full-stack system for managing access policies between network segments, per tenant.
+Supports creating, editing, deleting, and reordering rules through a user-friendly interface and efficient backend.
 
+---
 
-A lightweight system for managing security rules by tenant, supporting creation, viewing, deletion, and reordering.
+## 🖼️ Preview
 
-<img width="1512" height="982" alt="Screenshot 2025-07-15 at 16 05 02" src="https://github.com/user-attachments/assets/56462804-3016-4476-a74a-51e12cd6e715" />
+<img width="1022" alt="Main UI" src="https://github.com/user-attachments/assets/1db51e8b-6090-48b4-9f5f-d0c5ebe8c425" />
 
-## 💻 Frontend
+---
 
-Built with **React** and **MUI**, the UI currently supports:
+## ✨ Features
 
-- Rule table with styling and pagination
-- Adding rules with multiple sources and destinations
-- Deleting rules
-- Drag-and-drop reordering
+### 🖥️ Frontend (React + MUI)
 
+* Rule table with pagination, sorting, and drag-and-drop reordering
+* Add new rules with multi-source & multi-destination support
+* Inline editing with “save all” bulk update
+* Delete rule with confirmation
+* Visual indicators for rule state and index
 
+### 🛠️ Backend (Node.js + Express + MongoDB)
 
-<img width="1487" height="352" alt="Screenshot 2025-07-15 at 16 04 18" src="https://github.com/user-attachments/assets/8f9c9805-bc3a-4f7f-93b6-82db9c3fd7e1" />
+* CRUD API for tenant-specific rule management
+* Efficient reordering with `beforeId` / `afterId` logic (O(1))
+* Bulk update endpoint for editing multiple rules at once
+* Centralized error handling
+* Clean, modular controller/service structure
 
+---
 
-**After reordering (moved "D" between "A" and "B"):**
+## ⚙️ Tech Stack
 
-<img width="1508" height="351" alt="Screenshot 2025-07-15 at 16 04 38" src="https://github.com/user-attachments/assets/446d75fa-7e1a-4aa4-9146-588ab3d0f705" />
+| Layer    | Tech                               |
+| -------- | ---------------------------------- |
+| Frontend | React, TypeScript, MUI, DnD Kit    |
+| Backend  | Node.js, Express, TypeScript       |
+| Database | MongoDB + Mongoose                 |
+| Styling  | MUI, CSS-in-JS                     |
+| Testing  | Jest, Supertest, MongoMemoryServer |
 
-
-## ⚙️ Backend
-
-The backend (Node.js + Express + MongoDB) provides full CRUD functionality and includes:
-
-- Rule pagination by tenant
-- Rule creation
-- Rule reordering in **O(1)**
-- Centralized error handling
+---
 
 ## 🚀 Getting Started
 
-### 1. Clone the repository
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/mtwig95/rule-management-system-.git
 cd rule-management-system-/
 ```
 
-2. Start the backend
-   add .env to server
-```
-   PORT=3001
-   MONGO_URI=mongodb://localhost:27017/rulesdb
+### 2. Start the backend
+
+Create a `.env` file in `/server`:
+
+```env
+PORT=3001
+MONGO_URI=mongodb://localhost:27017/rulesdb
 ```
 
-```
+Then run:
+
+```bash
 cd server
 npm install
 npm run dev
 ```
-3. Start the frontend
-```
+
+### 3. Start the frontend
+
+```bash
 cd client
+npm install
 npm start
 ```
+
+---
+
+
+## 👤 Author
+
+Built by [Maytal Slonim Twig](https://github.com/mtwig95) 💙
+
+---
